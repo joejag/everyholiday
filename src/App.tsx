@@ -29,10 +29,7 @@ const ukHolidays = holidaysFor(
   'green',
   new Holidays('GB', 'SCT', { timezone: 'utc' })
 )
-const roHolidays = holidaysFor(
-  'yellow',
-  new Holidays('RO', { timezone: 'utc' })
-)
+const roHolidays = holidaysFor('pink', new Holidays('RO', { timezone: 'utc' }))
 const ptHolidays = holidaysFor('red', new Holidays('PT', { timezone: 'utc' }))
 
 const allHolidays = [...usHolidays, ...ukHolidays, ...roHolidays, ...ptHolidays]
@@ -41,7 +38,7 @@ function App() {
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>
-        2023 holidays in US, UK, Romania and Portugal
+        2023 public holidays in US, UK, Romania and Portugal
       </h2>
 
       <Calendar
@@ -52,57 +49,67 @@ function App() {
         displayHeader={false}
       />
 
-      <h3>US Holidays</h3>
-      <ul>
-        {usHolidays.map((h) => {
-          return (
-            <li key={h.id}>
-              <>
-                {h.startDate.toDateString()}: {h.name}
-              </>
-            </li>
-          )
-        })}
-      </ul>
+      <div style={{ margin: '1.6em' }}>
+        <p>
+          Legend:
+          <span style={{ color: 'blue' }}>US</span>{' '}
+          <span style={{ color: 'green' }}>GB</span>{' '}
+          <span style={{ color: 'pink' }}>RO</span>{' '}
+          <span style={{ color: 'red' }}>PT</span>{' '}
+        </p>
 
-      <h3>UK Holidays (Scotland)</h3>
-      <ul>
-        {ukHolidays.map((h) => {
-          return (
-            <li key={h.id}>
-              <>
-                {h.startDate.toDateString()}: {h.name}
-              </>
-            </li>
-          )
-        })}
-      </ul>
+        <h3>US Holidays</h3>
+        <ul>
+          {usHolidays.map((h) => {
+            return (
+              <li key={h.id}>
+                <>
+                  {h.startDate.toDateString()}: {h.name}
+                </>
+              </li>
+            )
+          })}
+        </ul>
 
-      <h3>Romania Holidays</h3>
-      <ul>
-        {roHolidays.map((h) => {
-          return (
-            <li key={h.id}>
-              <>
-                {h.startDate.toDateString()}: {h.name}
-              </>
-            </li>
-          )
-        })}
-      </ul>
+        <h3>UK Holidays (Scotland)</h3>
+        <ul>
+          {ukHolidays.map((h) => {
+            return (
+              <li key={h.id}>
+                <>
+                  {h.startDate.toDateString()}: {h.name}
+                </>
+              </li>
+            )
+          })}
+        </ul>
 
-      <h3>Portugal Holidays</h3>
-      <ul>
-        {ptHolidays.map((h) => {
-          return (
-            <li key={h.id}>
-              <>
-                {h.startDate.toDateString()}: {h.name}
-              </>
-            </li>
-          )
-        })}
-      </ul>
+        <h3>Romania Holidays</h3>
+        <ul>
+          {roHolidays.map((h) => {
+            return (
+              <li key={h.id}>
+                <>
+                  {h.startDate.toDateString()}: {h.name}
+                </>
+              </li>
+            )
+          })}
+        </ul>
+
+        <h3>Portugal Holidays</h3>
+        <ul>
+          {ptHolidays.map((h) => {
+            return (
+              <li key={h.id}>
+                <>
+                  {h.startDate.toDateString()}: {h.name}
+                </>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </div>
   )
 }
