@@ -14,12 +14,15 @@ const niceDate = (date: Date) => {
   return new Intl.DateTimeFormat('en-GB', options).format(date)
 }
 
-const currentYear = 2023
-
 let id = 0
-const holidaysFor = (country: string, color: string, holiday: Holidays) => {
+const holidaysFor = (
+  year: number,
+  country: string,
+  color: string,
+  holiday: Holidays
+) => {
   return holiday
-    .getHolidays(currentYear)
+    .getHolidays(year)
     .filter((h) => ['public'].includes(h.type))
     .map((h) => {
       return {
@@ -33,29 +36,72 @@ const holidaysFor = (country: string, color: string, holiday: Holidays) => {
     })
 }
 
-// See https://www.npmjs.com/package/date-holidays
-const usHolidays = holidaysFor(
-  'USA',
-  '#911eb4',
-  new Holidays('US', { timezone: 'utc' })
-)
-const ukHolidays = holidaysFor(
-  'Scotland',
-  '#e6194B',
-  new Holidays('GB', 'SCT', { timezone: 'utc' })
-)
-const roHolidays = holidaysFor(
-  'Romania',
-  '#f58231',
-  new Holidays('RO', { timezone: 'utc' })
-)
-const ptHolidays = holidaysFor(
-  'Portugal',
-  '#469990',
-  new Holidays('PT', { timezone: 'utc' })
-)
+const getHolidaysForYear = (year: number) => {
+  // See https://www.npmjs.com/package/date-holidays
+  const usHolidays = holidaysFor(
+    year,
+    'USA',
+    '#911eb4',
+    new Holidays('US', { timezone: 'utc' })
+  )
+  const ukHolidays = holidaysFor(
+    year,
+    'Scotland',
+    '#e6194B',
+    new Holidays('GB', 'SCT', { timezone: 'utc' })
+  )
+  const roHolidays = holidaysFor(
+    year,
+    'Romania',
+    '#f58231',
+    new Holidays('RO', { timezone: 'utc' })
+  )
+  const ptHolidays = holidaysFor(
+    year,
+    'Portugal',
+    '#469990',
+    new Holidays('PT', { timezone: 'utc' })
+  )
+  const allHolidays = [
+    ...usHolidays,
+    ...ukHolidays,
+    ...roHolidays,
+    ...ptHolidays,
+  ]
 
-const allHolidays = [...usHolidays, ...ukHolidays, ...roHolidays, ...ptHolidays]
+  return {
+    all: allHolidays,
+    places: [
+      { country: 'USA', holidays: usHolidays, color: '#911eb4' },
+      { country: 'Scotland', holidays: ukHolidays, color: '#e6194B' },
+      { country: 'Romania', holidays: roHolidays, color: '#f58231' },
+      { country: 'Portugal', holidays: ptHolidays, color: '#469990' },
+    ],
+  }
+}
+
+interface YearsWorthOfHoliday {
+  all: {
+    id: number
+    color: string
+    name: string
+    startDate: Date
+    endDate: Date
+    country: string
+  }[]
+  places: {
+    country: string
+    color: string
+    holidays: {
+      id: number
+      color: string
+      name: string
+      startDate: Date
+      endDate: Date
+      country: string
+    }[]
+  }[]
+}
 
 const HolidayList = ({
   country,
@@ -91,7 +137,15 @@ interface HolidayHighlight {
 }
 
 function App() {
+  const [year, setYear] = React.useState(new Date().getFullYear())
+  const [holidaysThisYear, setHolidaysThisYear] =
+    React.useState<YearsWorthOfHoliday>(getHolidaysForYear(year))
   const [holidaysHere, setHolidaysHere] = React.useState<HolidayHighlight[]>([])
+
+  React.useEffect(() => {
+    setHolidaysThisYear(getHolidaysForYear(year))
+  }, [year])
+
   const mousey = (e: any) => {
     if (e.events.length > 0) {
       const content: HolidayHighlight[] = []
@@ -113,17 +167,19 @@ function App() {
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>
-        2023 public holidays in US, UK, Romania and Portugal
+        Public holidays in US, UK, Romania and Portugal
       </h2>
 
       <Calendar
-        year={currentYear}
+        year={year}
         language="en"
         weekStart={1}
-        dataSource={allHolidays}
-        displayHeader={false}
+        dataSource={holidaysThisYear.all}
         onDayEnter={mousey}
         onDayLeave={() => setHolidaysHere([])}
+        onYearChanged={({ currentYear }: any) => {
+          setYear(currentYear)
+        }}
       />
 
       <div style={{ margin: '1.6em' }}>
@@ -134,21 +190,26 @@ function App() {
             </h2>
           ))}
           {holidaysHere.length === 0 && (
-            <h2>Hover over a date to see the holidays</h2>
+            <h2>
+              <em>Hover over a date to see the holidays</em>
+            </h2>
           )}
         </p>
 
         <p>
-          Legend: <span style={{ color: '#911eb4' }}>US</span>{' '}
-          <span style={{ color: '#e6194B' }}>GB</span>{' '}
-          <span style={{ color: '#f58231' }}>RO</span>{' '}
-          <span style={{ color: '#469990' }}>PT</span>{' '}
+          Legend:{' '}
+          {holidaysThisYear.places.map((h) => {
+            return (
+              <>
+                <span style={{ color: h.color }}>{h.country}</span>{' '}
+              </>
+            )
+          })}
         </p>
 
-        <HolidayList country="US" holidays={usHolidays} />
-        <HolidayList country="Scotland" holidays={ukHolidays} />
-        <HolidayList country="Romania" holidays={roHolidays} />
-        <HolidayList country="Portugal" holidays={ptHolidays} />
+        {holidaysThisYear.places.map((h) => {
+          return <HolidayList country={h.country} holidays={h.holidays} />
+        })}
       </div>
     </div>
   )
