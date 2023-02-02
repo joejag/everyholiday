@@ -1,5 +1,4 @@
 import './App.css'
-import 'react-tooltip/dist/react-tooltip.css'
 
 import Holidays from 'date-holidays'
 import React from 'react'
