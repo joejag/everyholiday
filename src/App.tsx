@@ -5,6 +5,15 @@ import React from 'react'
 
 import Calendar from './Calendar'
 
+const niceDate = (date: Date) => {
+  var options: Intl.DateTimeFormatOptions = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }
+  return new Intl.DateTimeFormat('en-GB', options).format(date)
+}
+
 const currentYear = 2023
 
 let id = 0
@@ -43,6 +52,31 @@ const ptHolidays = holidaysFor(
 
 const allHolidays = [...usHolidays, ...ukHolidays, ...roHolidays, ...ptHolidays]
 
+const HolidayList = ({
+  country,
+  holidays,
+}: {
+  country: string
+  holidays: any
+}) => {
+  return (
+    <>
+      <h3>{country} Holidays</h3>
+      <ul>
+        {holidays.map((h: any) => {
+          return (
+            <li key={h.id}>
+              <>
+                {niceDate(h.startDate)}: {h.name}
+              </>
+            </li>
+          )
+        })}
+      </ul>
+    </>
+  )
+}
+
 function App() {
   return (
     <div>
@@ -66,57 +100,10 @@ function App() {
           <span style={{ color: '#469990' }}>PT</span>{' '}
         </p>
 
-        <h3>US Holidays</h3>
-        <ul>
-          {usHolidays.map((h) => {
-            return (
-              <li key={h.id}>
-                <>
-                  {h.startDate.toDateString()}: {h.name}
-                </>
-              </li>
-            )
-          })}
-        </ul>
-
-        <h3>UK Holidays (Scotland)</h3>
-        <ul>
-          {ukHolidays.map((h) => {
-            return (
-              <li key={h.id}>
-                <>
-                  {h.startDate.toDateString()}: {h.name}
-                </>
-              </li>
-            )
-          })}
-        </ul>
-
-        <h3>Romania Holidays</h3>
-        <ul>
-          {roHolidays.map((h) => {
-            return (
-              <li key={h.id}>
-                <>
-                  {h.startDate.toDateString()}: {h.name}
-                </>
-              </li>
-            )
-          })}
-        </ul>
-
-        <h3>Portugal Holidays</h3>
-        <ul>
-          {ptHolidays.map((h) => {
-            return (
-              <li key={h.id}>
-                <>
-                  {h.startDate.toDateString()}: {h.name}
-                </>
-              </li>
-            )
-          })}
-        </ul>
+        <HolidayList country="US" holidays={usHolidays} />
+        <HolidayList country="Scotland" holidays={ukHolidays} />
+        <HolidayList country="Romania" holidays={roHolidays} />
+        <HolidayList country="Portugal" holidays={ptHolidays} />
       </div>
     </div>
   )
