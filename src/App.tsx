@@ -1,4 +1,5 @@
 import './App.css'
+import 'react-tooltip/dist/react-tooltip.css'
 
 import Holidays from 'date-holidays'
 import React from 'react'
@@ -17,7 +18,7 @@ const niceDate = (date: Date) => {
 const currentYear = 2023
 
 let id = 0
-const holidaysFor = (color: string, holiday: Holidays) => {
+const holidaysFor = (country: string, color: string, holiday: Holidays) => {
   return holiday
     .getHolidays(currentYear)
     .filter((h) => ['public'].includes(h.type))
@@ -28,24 +29,29 @@ const holidaysFor = (color: string, holiday: Holidays) => {
         name: h.name,
         startDate: h.start,
         endDate: h.start,
+        country,
       }
     })
 }
 
 // See https://www.npmjs.com/package/date-holidays
 const usHolidays = holidaysFor(
+  'USA',
   '#911eb4',
   new Holidays('US', { timezone: 'utc' })
 )
 const ukHolidays = holidaysFor(
+  'Scotland',
   '#e6194B',
   new Holidays('GB', 'SCT', { timezone: 'utc' })
 )
 const roHolidays = holidaysFor(
+  'Romania',
   '#f58231',
   new Holidays('RO', { timezone: 'utc' })
 )
 const ptHolidays = holidaysFor(
+  'Portugal',
   '#469990',
   new Holidays('PT', { timezone: 'utc' })
 )
@@ -77,7 +83,34 @@ const HolidayList = ({
   )
 }
 
+interface HolidayHighlight {
+  id: number
+  name: string
+  country: string
+  color: string
+  date: Date
+}
+
 function App() {
+  const [holidaysHere, setHolidaysHere] = React.useState<HolidayHighlight[]>([])
+  const mousey = (e: any) => {
+    if (e.events.length > 0) {
+      const content: HolidayHighlight[] = []
+
+      for (var i in e.events) {
+        const ev = e.events[i]
+        content.push({
+          id: ev.id,
+          country: ev.country,
+          name: ev.name,
+          color: ev.color,
+          date: ev.startDate,
+        })
+      }
+      setHolidaysHere(content)
+    }
+  }
+
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>
@@ -90,9 +123,22 @@ function App() {
         weekStart={1}
         dataSource={allHolidays}
         displayHeader={false}
+        onDayEnter={mousey}
+        onDayLeave={() => setHolidaysHere([])}
       />
 
       <div style={{ margin: '1.6em' }}>
+        <p>
+          {holidaysHere.map((h) => (
+            <h2 key={h.id}>
+              {h.country}: {h.name}
+            </h2>
+          ))}
+          {holidaysHere.length === 0 && (
+            <h2>Hover over a date to see the holidays</h2>
+          )}
+        </p>
+
         <p>
           Legend: <span style={{ color: '#911eb4' }}>US</span>{' '}
           <span style={{ color: '#e6194B' }}>GB</span>{' '}
