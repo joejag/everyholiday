@@ -1,4 +1,32 @@
 /**
+ * @copyright 2013 Sonia Keys
+ * @copyright 2016 commenthol
+ * @license MIT
+ * @module nutation
+ */
+
+/**
+ * @copyright 2013 Sonia Keys
+ * @copyright 2016 commenthol
+ * @license MIT
+ * @module planetposition
+ */
+
+/**
+ * @copyright 2013 Sonia Keys
+ * @copyright 2016 commenthol
+ * @license MIT
+ * @module precess
+ */
+
+/**
+ * @copyright 2013 Sonia Keys
+ * @copyright 2016 commenthol
+ * @license MIT
+ * @module solar
+ */
+
+/**
  * @license React
  * react-dom.production.min.js
  *
@@ -37,3 +65,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+//! Copyright (c) JS Foundation and other contributors
+
+//! github.com/moment/moment-timezone
+
+//! license : MIT
+
+//! moment-timezone.js
+
+//! moment.js
+
+//! version : 0.5.40
