@@ -24,13 +24,22 @@ const holidaysFor = (color: string, holiday: Holidays) => {
 }
 
 // See https://www.npmjs.com/package/date-holidays
-const usHolidays = holidaysFor('blue', new Holidays('US', { timezone: 'utc' }))
+const usHolidays = holidaysFor(
+  '#911eb4',
+  new Holidays('US', { timezone: 'utc' })
+)
 const ukHolidays = holidaysFor(
-  'green',
+  '#e6194B',
   new Holidays('GB', 'SCT', { timezone: 'utc' })
 )
-const roHolidays = holidaysFor('pink', new Holidays('RO', { timezone: 'utc' }))
-const ptHolidays = holidaysFor('red', new Holidays('PT', { timezone: 'utc' }))
+const roHolidays = holidaysFor(
+  '#f58231',
+  new Holidays('RO', { timezone: 'utc' })
+)
+const ptHolidays = holidaysFor(
+  '#469990',
+  new Holidays('PT', { timezone: 'utc' })
+)
 
 const allHolidays = [...usHolidays, ...ukHolidays, ...roHolidays, ...ptHolidays]
 
@@ -51,11 +60,10 @@ function App() {
 
       <div style={{ margin: '1.6em' }}>
         <p>
-          Legend:
-          <span style={{ color: 'blue' }}>US</span>{' '}
-          <span style={{ color: 'green' }}>GB</span>{' '}
-          <span style={{ color: 'pink' }}>RO</span>{' '}
-          <span style={{ color: 'red' }}>PT</span>{' '}
+          Legend: <span style={{ color: '#911eb4' }}>US</span>{' '}
+          <span style={{ color: '#e6194B' }}>GB</span>{' '}
+          <span style={{ color: '#f58231' }}>RO</span>{' '}
+          <span style={{ color: '#469990' }}>PT</span>{' '}
         </p>
 
         <h3>US Holidays</h3>
