@@ -58,10 +58,6 @@ export default class Calendar extends React.Component {
 
   static locales = JsCalendar.locales // Map the "locales" property to the js-year-calendar "locales" property, in order to make the locale files compatible
 
-  constructor(props) {
-    super(props)
-  }
-
   componentDidMount() {
     this.JsCalendar = new JsCalendar(this.container, {
       // opsions
@@ -104,9 +100,9 @@ export default class Calendar extends React.Component {
 
   compare(a, b) {
     if (typeof a === 'function' && typeof b === 'function') {
-      return a.toString() != b.toString()
+      return a.toString() !== b.toString()
     } else if (a instanceof Date && b instanceof Date) {
-      return a.getTime() != b.getTime()
+      return a.getTime() !== b.getTime()
     } else if (a !== null && typeof a === 'object' && b !== null && typeof b === 'object') {
       var aKeys = Object.keys(a)
       var bKeys = Object.keys(b)
@@ -117,7 +113,7 @@ export default class Calendar extends React.Component {
         return aKeys.some((key) => this.compare(a[key], b[key]))
       }
     } else {
-      return a != b
+      return a !== b
     }
   }
 
@@ -188,7 +184,7 @@ export default class Calendar extends React.Component {
     if (ops.length > 0) {
       ops.forEach((op) => op())
 
-      if (nextProps.year == this.props.year && nextProps.startDate == this.props.startDate) {
+      if (nextProps.year === this.props.year && nextProps.startDate === this.props.startDate) {
         // If the year has changed, the calendar has automatically been rendered
         cal.render()
       }
