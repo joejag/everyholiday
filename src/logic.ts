@@ -1,5 +1,11 @@
 import Holidays from 'date-holidays'
 
+export interface PlaceToCover {
+  country: string
+  state?: string
+  color: string
+}
+
 export interface YearsWorthOfHoliday {
   all: {
     id: number
@@ -31,6 +37,24 @@ export interface HolidayHighlight {
   date: Date
 }
 
+export const listAllPlacesAvailable = () => {
+  const h = new Holidays('US', { timezone: 'utc' })
+  const countries = h.getCountries('en-GB')
+  var arr = []
+
+  for (var key in countries) {
+    if (countries.hasOwnProperty(key)) {
+      //   arr.push({ value: key, label: countries[key] })
+      const stuff: Record<string, { value: string; label: string }> = {
+        key: { value: key, label: countries[key] },
+      }
+      arr.push({ value: key, label: countries[key] })
+    }
+  }
+
+  return arr
+}
+
 let id = 0
 export const holidaysFor = (
   year: number,
@@ -53,10 +77,13 @@ export const holidaysFor = (
     })
 }
 
-export const getHolidaysForYear = (year: number, placesToCover: any) => {
+export const getHolidaysForYear = (
+  year: number,
+  placesToCover: PlaceToCover[]
+) => {
   // See https://www.npmjs.com/package/date-holidays
 
-  const places = placesToCover.map((place: any) => {
+  const places = placesToCover.map((place: PlaceToCover) => {
     let h = new Holidays(place.country, { timezone: 'utc' })
     let name = h.getCountries()[place.country]
     if (place.state) {

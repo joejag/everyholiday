@@ -1,16 +1,48 @@
-import './App.css'
-
 import React from 'react'
+import { Typeahead } from 'react-bootstrap-typeahead'
+import { Option } from 'react-bootstrap-typeahead/types/types'
+import Container from 'react-bootstrap/Container'
+import Form from 'react-bootstrap/Form'
+import Navbar from 'react-bootstrap/Navbar'
 
 import Calendar from './Calendar'
-import { getHolidaysForYear, HolidayHighlight, YearsWorthOfHoliday } from './logic'
+import {
+    getHolidaysForYear, HolidayHighlight, listAllPlacesAvailable, PlaceToCover, YearsWorthOfHoliday
+} from './logic'
 
-const PLACES_TO_COVER = [
-  { country: 'US', color: '#911eb4' },
-  { country: 'GB', state: 'SCT', color: '#e6194B' },
-  { country: 'PT', color: '#f58231' },
-  { country: 'RO', color: '#469990' },
+const COLORS = [
+  '#e6194b',
+  '#3cb44b',
+  '#ffe119',
+  '#4363d8',
+  '#f58231',
+  '#911eb4',
+  '#46f0f0',
+  '#f032e6',
+  '#bcf60c',
+  '#fabebe',
+  '#008080',
+  '#e6beff',
+  '#9a6324',
+  '#fffac8',
+  '#800000',
+  '#aaffc3',
+  '#808000',
+  '#ffd8b1',
+  '#000075',
+  '#808080',
 ]
+
+const options = listAllPlacesAvailable()
+
+const shortDate = (date: Date) => {
+  var options: Intl.DateTimeFormatOptions = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }
+  return new Intl.DateTimeFormat('en-GB', options).format(date)
+}
 
 const HolidayList = ({
   country,
@@ -37,28 +69,28 @@ const HolidayList = ({
   )
 }
 
-const shortDate = (date: Date) => {
-  var options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }
-  return new Intl.DateTimeFormat('en-GB', options).format(date)
-}
-
 function App() {
+  const [countrySelection, setCountrySelection] = React.useState<Option[]>([
+    { label: 'United States of America', value: 'US' },
+    { label: 'United Kingdom', value: 'GB' },
+    { label: 'Portugal', value: 'PT' },
+    { label: 'Romania', value: 'RO' },
+  ])
   const [year, setYear] = React.useState(new Date().getFullYear())
   const [holidaysThisYear, setHolidaysThisYear] =
-    React.useState<YearsWorthOfHoliday>(
-      getHolidaysForYear(year, PLACES_TO_COVER)
-    )
+    React.useState<YearsWorthOfHoliday>({ all: [], places: [] })
   const [holidaysSelected, setHolidaysHere] = React.useState<
     HolidayHighlight[]
   >([])
 
   React.useEffect(() => {
-    setHolidaysThisYear(getHolidaysForYear(year, PLACES_TO_COVER))
-  }, [year])
+    let colorIndex = 0
+    const placesToCover = countrySelection.map((c: any) => {
+      return { country: c.value, color: COLORS[colorIndex++] }
+    })
+
+    setHolidaysThisYear(getHolidaysForYear(year, placesToCover))
+  }, [year, countrySelection])
 
   const showHolidayAssociatedWithDate = (e: any) => {
     if (e.events.length > 0) {
@@ -79,46 +111,64 @@ function App() {
   }
 
   return (
-    <div>
-      <h2 style={{ textAlign: 'center' }}>
-        Public holidays in US, UK, Romania and Portugal
-      </h2>
+    <>
+      <Navbar bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand href="/">Public holidays</Navbar.Brand>
+        </Container>
+      </Navbar>
 
-      <Calendar
-        year={year}
-        language="en"
-        weekStart={1}
-        dataSource={holidaysThisYear.all}
-        onDayEnter={showHolidayAssociatedWithDate}
-        onDayLeave={() => setHolidaysHere([])}
-        onYearChanged={({ currentYear }: any) => {
-          setYear(currentYear)
-        }}
-      />
-
-      <div style={{ margin: '1.6em' }}>
-        {holidaysSelected.map((h) => (
-          <h2 key={h.id}>
-            <span style={{ color: h.color }}>{h.country}</span>: {h.name}
-          </h2>
-        ))}
-        {holidaysSelected.length === 0 && (
-          <h2>
-            <em>Hover over a date to see the holidays</em>
-          </h2>
-        )}
-
-        {holidaysThisYear.places.map((h) => {
-          return (
-            <HolidayList
-              key={h.country}
-              country={h.country}
-              holidays={h.holidays}
+      <Container>
+        <div style={{ marginTop: '1em' }}>
+          <Form.Group style={{ marginTop: '20px' }}>
+            <Typeahead
+              id="basic-typeahead-multiple"
+              labelKey="label"
+              multiple
+              onChange={setCountrySelection}
+              options={options}
+              placeholder="Choose a country"
+              selected={countrySelection}
             />
-          )
-        })}
-      </div>
-    </div>
+          </Form.Group>
+
+          <Calendar
+            year={year}
+            language="en"
+            weekStart={1}
+            dataSource={holidaysThisYear.all}
+            onDayEnter={showHolidayAssociatedWithDate}
+            onDayLeave={() => setHolidaysHere([])}
+            onYearChanged={({ currentYear }: any) => {
+              setYear(currentYear)
+            }}
+          />
+        </div>
+
+        <div style={{ margin: '1.6em' }}>
+          {holidaysSelected.map((h) => (
+            <h2 key={h.id}>
+              <span style={{ color: h.color }}>{h.country}</span>: {h.name}
+            </h2>
+          ))}
+          {holidaysSelected.length === 0 && (
+            <h2>
+              <em>Hover over a date to see the holidays</em>
+            </h2>
+          )}
+
+          {holidaysThisYear.places.map((h) => {
+            return (
+              <HolidayList
+                key={h.country}
+                country={h.country}
+                holidays={h.holidays}
+              />
+            )
+          })}
+        </div>
+      </Container>
+    </>
   )
 }
 
