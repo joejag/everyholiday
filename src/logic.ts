@@ -1,0 +1,74 @@
+import Holidays from 'date-holidays'
+
+export interface YearsWorthOfHoliday {
+  all: {
+    id: number
+    color: string
+    name: string
+    startDate: Date
+    endDate: Date
+    country: string
+  }[]
+  places: {
+    country: string
+    color: string
+    holidays: {
+      id: number
+      color: string
+      name: string
+      startDate: Date
+      endDate: Date
+      country: string
+    }[]
+  }[]
+}
+
+export interface HolidayHighlight {
+  id: number
+  name: string
+  country: string
+  color: string
+  date: Date
+}
+
+let id = 0
+export const holidaysFor = (
+  year: number,
+  country: string,
+  color: string,
+  holiday: Holidays
+) => {
+  return holiday
+    .getHolidays(year)
+    .filter((h) => ['public'].includes(h.type))
+    .map((h) => {
+      return {
+        id: id++,
+        color,
+        name: h.name,
+        startDate: h.start,
+        endDate: h.start,
+        country,
+      }
+    })
+}
+
+export const getHolidaysForYear = (year: number, placesToCover: any) => {
+  // See https://www.npmjs.com/package/date-holidays
+
+  const places = placesToCover.map((place: any) => {
+    let h = new Holidays(place.country, { timezone: 'utc' })
+    let name = h.getCountries()[place.country]
+    if (place.state) {
+      h = new Holidays(place.country, place.state, { timezone: 'utc' })
+      name = h.getStates(place.country)[place.state]
+    }
+    const holidays = holidaysFor(year, name, place.color, h)
+    return { country: name, holidays: holidays, color: place.color }
+  })
+
+  return {
+    all: places.map((s) => s.holidays).flat(),
+    places,
+  }
+}

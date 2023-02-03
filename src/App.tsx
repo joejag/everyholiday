@@ -1,9 +1,9 @@
 import './App.css'
 
-import Holidays from 'date-holidays'
 import React from 'react'
 
 import Calendar from './Calendar'
+import { getHolidaysForYear, HolidayHighlight, YearsWorthOfHoliday } from './logic'
 
 const PLACES_TO_COVER = [
   { country: 'US', color: '#911eb4' },
@@ -11,79 +11,6 @@ const PLACES_TO_COVER = [
   { country: 'PT', color: '#f58231' },
   { country: 'RO', color: '#469990' },
 ]
-
-interface YearsWorthOfHoliday {
-  all: {
-    id: number
-    color: string
-    name: string
-    startDate: Date
-    endDate: Date
-    country: string
-  }[]
-  places: {
-    country: string
-    color: string
-    holidays: {
-      id: number
-      color: string
-      name: string
-      startDate: Date
-      endDate: Date
-      country: string
-    }[]
-  }[]
-}
-
-interface HolidayHighlight {
-  id: number
-  name: string
-  country: string
-  color: string
-  date: Date
-}
-
-let id = 0
-const holidaysFor = (
-  year: number,
-  country: string,
-  color: string,
-  holiday: Holidays
-) => {
-  return holiday
-    .getHolidays(year)
-    .filter((h) => ['public'].includes(h.type))
-    .map((h) => {
-      return {
-        id: id++,
-        color,
-        name: h.name,
-        startDate: h.start,
-        endDate: h.start,
-        country,
-      }
-    })
-}
-
-const getHolidaysForYear = (year: number) => {
-  // See https://www.npmjs.com/package/date-holidays
-
-  const places = PLACES_TO_COVER.map((place) => {
-    let h = new Holidays(place.country, { timezone: 'utc' })
-    let name = h.getCountries()[place.country]
-    if (place.state) {
-      h = new Holidays(place.country, place.state, { timezone: 'utc' })
-      name = h.getStates(place.country)[place.state]
-    }
-    const holidays = holidaysFor(year, name, place.color, h)
-    return { country: name, holidays: holidays, color: place.color }
-  })
-
-  return {
-    all: places.map((s) => s.holidays).flat(),
-    places,
-  }
-}
 
 const HolidayList = ({
   country,
@@ -122,13 +49,15 @@ const shortDate = (date: Date) => {
 function App() {
   const [year, setYear] = React.useState(new Date().getFullYear())
   const [holidaysThisYear, setHolidaysThisYear] =
-    React.useState<YearsWorthOfHoliday>(getHolidaysForYear(year))
+    React.useState<YearsWorthOfHoliday>(
+      getHolidaysForYear(year, PLACES_TO_COVER)
+    )
   const [holidaysSelected, setHolidaysHere] = React.useState<
     HolidayHighlight[]
   >([])
 
   React.useEffect(() => {
-    setHolidaysThisYear(getHolidaysForYear(year))
+    setHolidaysThisYear(getHolidaysForYear(year, PLACES_TO_COVER))
   }, [year])
 
   const showHolidayAssociatedWithDate = (e: any) => {
