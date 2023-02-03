@@ -58,7 +58,7 @@ export const listAllPlacesAvailable = () => {
 let id = 0
 export const holidaysFor = (year: number, country: string, color: string, holiday: Holidays) => {
   return holiday
-    .getHolidays(year)
+    .getHolidays(year, 'en-GB')
     .filter((h) => ['public'].includes(h.type))
     .map((h) => {
       return {
@@ -77,7 +77,7 @@ export const getHolidaysForYear = (year: number, placesToCover: PlaceToCover[]) 
 
   const places = placesToCover.map((place: PlaceToCover) => {
     let h = new Holidays(place.country, { timezone: 'utc' })
-    let name = h.getCountries()[place.country]
+    let name = h.getCountries('en-GB')[place.country]
     if (place.state) {
       h = new Holidays(place.country, place.state, { timezone: 'utc' })
       name = h.getStates(place.country)[place.state]
