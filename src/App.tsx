@@ -1,7 +1,7 @@
 import 'tippy.js/dist/tippy.css'
 
 import React from 'react'
-import { Typeahead } from 'react-bootstrap-typeahead'
+import { Token, Typeahead } from 'react-bootstrap-typeahead'
 import { Option } from 'react-bootstrap-typeahead/types/types'
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
@@ -16,19 +16,19 @@ import { getHolidaysForYear, listAllPlacesAvailable, YearsWorthOfHoliday } from 
 
 const COLORS = [
   '#3cb44b',
-  '#ffe119',
   '#4363d8',
   '#f58231',
   '#911eb4',
-  '#46f0f0',
   '#f032e6',
-  '#bcf60c',
   '#fabebe',
   '#008080',
   '#e6beff',
   '#9a6324',
   '#fffac8',
+  '#bcf60c',
   '#800000',
+  '#ffe119',
+  '#46f0f0',
   '#aaffc3',
   '#808000',
   '#ffd8b1',
@@ -129,13 +129,25 @@ function App() {
         <div style={{ marginTop: '0.7em' }}>
           <Form.Group style={{ marginBottom: '1em' }}>
             <Typeahead
-              id="basic-typeahead-multiple"
               labelKey="label"
               multiple
               onChange={setCountrySelection}
               options={options}
               placeholder="Choose a country"
               selected={countrySelection}
+              clearButton
+              renderToken={(option: any, props, index) => {
+                return (
+                  <Token
+                    option={option}
+                    disabled={props.disabled}
+                    onRemove={props.onRemove}
+                    style={{ color: 'white', backgroundColor: COLORS[index % COLORS.length] }}
+                  >
+                    {option.label}
+                  </Token>
+                )
+              }}
             />
           </Form.Group>
 
@@ -151,13 +163,11 @@ function App() {
           />
         </div>
 
-        <div style={{ margin: '1.6em' }}>
-          <Row xs={1} md={2} className="g-4">
-            {holidaysThisYear.places.map((h) => {
-              return <HolidayList key={h.country} country={h.country} holidays={h.holidays} />
-            })}
-          </Row>
-        </div>
+        <Row xs={1} md={2} className="g-4 mt-2">
+          {holidaysThisYear.places.map((h) => {
+            return <HolidayList key={h.country} country={h.country} holidays={h.holidays} />
+          })}
+        </Row>
       </Container>
     </>
   )
