@@ -48,11 +48,14 @@ const shortDate = (date: Date) => {
   return new Intl.DateTimeFormat('en-GB', options).format(date)
 }
 
-const HolidayList = ({ country, holidays }: { country: string; holidays: any }) => {
+const HolidayList = ({ country, countryCode, holidays }: { country: string; countryCode: string; holidays: any }) => {
   return (
     <Col>
       <Card>
-        <Card.Header>{country}</Card.Header>
+        <Card.Header>
+          <img src={`/flags/${countryCode}.svg`} width={30} height={30} alt="flag" />{' '}
+          <strong style={{ verticalAlign: 'middle' }}>{country}</strong>
+        </Card.Header>
         <Card.Body>
           <ul>
             {holidays.map((h: any) => {
@@ -75,10 +78,10 @@ let tooltip: any = null
 
 function App() {
   const [countrySelection, setCountrySelection] = React.useState<Option[]>([
-    { label: 'United States of America', value: 'US' },
-    { label: 'United Kingdom', value: 'GB' },
-    { label: 'Portugal', value: 'PT' },
-    { label: 'Romania', value: 'RO' },
+    { label: 'United States of America', value: { country: 'US' } },
+    { label: 'Scotland', value: { country: 'GB', state: 'SCT' } },
+    { label: 'Portugal', value: { country: 'PT' } },
+    { label: 'Romania', value: { country: 'RO' } },
   ])
   const [year, setYear] = React.useState(new Date().getFullYear())
   const [holidaysThisYear, setHolidaysThisYear] = React.useState<YearsWorthOfHoliday>({ all: [], places: [] })
@@ -86,9 +89,8 @@ function App() {
   React.useEffect(() => {
     let colorIndex = 0
     const placesToCover = countrySelection.map((c: any) => {
-      return { country: c.value, color: COLORS[colorIndex++ % COLORS.length] }
+      return { ...c.value, color: COLORS[colorIndex++ % COLORS.length] }
     })
-
     setHolidaysThisYear(getHolidaysForYear(year, placesToCover))
   }, [year, countrySelection])
 
@@ -129,6 +131,7 @@ function App() {
         <div style={{ marginTop: '0.7em' }}>
           <Form.Group style={{ marginBottom: '1em' }}>
             <Typeahead
+              id="country-chooser"
               labelKey="label"
               multiple
               onChange={setCountrySelection}
@@ -139,6 +142,7 @@ function App() {
               renderToken={(option: any, props, index) => {
                 return (
                   <Token
+                    key={option.label}
                     option={option}
                     disabled={props.disabled}
                     onRemove={props.onRemove}
@@ -165,7 +169,7 @@ function App() {
 
         <Row xs={1} md={2} className="g-4 mt-2">
           {holidaysThisYear.places.map((h) => {
-            return <HolidayList key={h.country} country={h.country} holidays={h.holidays} />
+            return <HolidayList key={h.country} country={h.country} countryCode={h.countryCode} holidays={h.holidays} />
           })}
         </Row>
       </Container>

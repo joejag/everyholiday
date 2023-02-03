@@ -17,6 +17,7 @@ export interface YearsWorthOfHoliday {
   }[]
   places: {
     country: string
+    countryCode: string
     color: string
     holidays: {
       id: number
@@ -42,13 +43,16 @@ export const listAllPlacesAvailable = () => {
   const countries = h.getCountries('en-GB')
   var arr = []
 
-  for (var key in countries) {
+  for (let key in countries) {
     if (countries.hasOwnProperty(key)) {
-      //   arr.push({ value: key, label: countries[key] })
-      const stuff: Record<string, { value: string; label: string }> = {
-        key: { value: key, label: countries[key] },
-      }
-      arr.push({ value: key, label: countries[key] })
+      arr.push({ label: countries[key], value: { country: key } })
+    }
+  }
+
+  const ukRegions = h.getStates('GB', 'en-GB')
+  for (let key in ukRegions) {
+    if (ukRegions.hasOwnProperty(key)) {
+      arr.push({ label: ukRegions[key], value: { country: 'GB', state: key } })
     }
   }
 
@@ -56,7 +60,7 @@ export const listAllPlacesAvailable = () => {
 }
 
 let id = 0
-export const holidaysFor = (year: number, country: string, color: string, holiday: Holidays) => {
+export const holidaysFor = (year: number, country: string, color: string, countryCode: string, holiday: Holidays) => {
   return holiday
     .getHolidays(year, 'en-GB')
     .filter((h) => ['public'].includes(h.type))
@@ -82,8 +86,9 @@ export const getHolidaysForYear = (year: number, placesToCover: PlaceToCover[]) 
       h = new Holidays(place.country, place.state, { timezone: 'utc' })
       name = h.getStates(place.country)[place.state]
     }
-    const holidays = holidaysFor(year, name, place.color, h)
-    return { country: name, holidays: holidays, color: place.color }
+    const countryCode = (place.country + (place.state ? '-' + place.state : '')).toLowerCase()
+    const holidays = holidaysFor(year, name, place.color, countryCode, h)
+    return { country: name, countryCode, holidays: holidays, color: place.color }
   })
 
   return {
