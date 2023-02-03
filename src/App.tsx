@@ -12,9 +12,7 @@ import Row from 'react-bootstrap/Row'
 import tippy from 'tippy.js'
 
 import Calendar from './Calendar'
-import {
-    getHolidaysForYear, HolidayHighlight, listAllPlacesAvailable, YearsWorthOfHoliday
-} from './logic'
+import { getHolidaysForYear, listAllPlacesAvailable, YearsWorthOfHoliday } from './logic'
 
 const COLORS = [
   '#3cb44b',
@@ -88,7 +86,7 @@ function App() {
   React.useEffect(() => {
     let colorIndex = 0
     const placesToCover = countrySelection.map((c: any) => {
-      return { country: c.value, color: COLORS[colorIndex++] }
+      return { country: c.value, color: COLORS[colorIndex++ % COLORS.length] }
     })
 
     setHolidaysThisYear(getHolidaysForYear(year, placesToCover))
