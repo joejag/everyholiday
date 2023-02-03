@@ -155,17 +155,6 @@ function App() {
         Public holidays in US, UK, Romania and Portugal
       </h2>
 
-      <p style={{ margin: '1.6em' }}>
-        Legend:{' '}
-        {holidaysThisYear.places.map((h) => {
-          return (
-            <React.Fragment key={h.country}>
-              <span style={{ color: h.color }}>{h.country}</span>{' '}
-            </React.Fragment>
-          )
-        })}
-      </p>
-
       <Calendar
         year={year}
         language="en"
@@ -181,7 +170,7 @@ function App() {
       <div style={{ margin: '1.6em' }}>
         {holidaysSelected.map((h) => (
           <h2 key={h.id}>
-            {h.country}: {h.name}
+            <span style={{ color: h.color }}>{h.country}</span>: {h.name}
           </h2>
         ))}
         {holidaysSelected.length === 0 && (
