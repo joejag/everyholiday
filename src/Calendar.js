@@ -87,12 +87,8 @@ export default class Calendar extends React.Component {
       style: this.props.style,
       weekStart: this.props.weekStart,
       numberMonthsDisplayed: this.props.numberMonthsDisplayed,
-      startYear:
-        this.props.year != null ? this.props.year : this.props.defaultYear,
-      startDate:
-        this.props.startDate != null
-          ? this.props.startDate
-          : this.props.defaultStartDate,
+      startYear: this.props.year != null ? this.props.year : this.props.defaultYear,
+      startDate: this.props.startDate != null ? this.props.startDate : this.props.defaultStartDate,
 
       // Events
       clickDay: this.props.onDayClick,
@@ -111,12 +107,7 @@ export default class Calendar extends React.Component {
       return a.toString() != b.toString()
     } else if (a instanceof Date && b instanceof Date) {
       return a.getTime() != b.getTime()
-    } else if (
-      a !== null &&
-      typeof a === 'object' &&
-      b !== null &&
-      typeof b === 'object'
-    ) {
+    } else if (a !== null && typeof a === 'object' && b !== null && typeof b === 'object') {
       var aKeys = Object.keys(a)
       var bKeys = Object.keys(b)
 
@@ -140,146 +131,64 @@ export default class Calendar extends React.Component {
     const ops = []
 
     // opsions
-    if (this.compare(nextProps.allowOverlap, this.props.allowOverlap))
-      ops.push(() => cal.setAllowOverlap(nextProps.allowOverlap))
-    if (this.compare(nextProps.alwaysHalfDay, this.props.alwaysHalfDay))
-      ops.push(() => cal.setAlwaysHalfDay(nextProps.alwaysHalfDay, true))
+    if (this.compare(nextProps.allowOverlap, this.props.allowOverlap)) ops.push(() => cal.setAllowOverlap(nextProps.allowOverlap))
+    if (this.compare(nextProps.alwaysHalfDay, this.props.alwaysHalfDay)) ops.push(() => cal.setAlwaysHalfDay(nextProps.alwaysHalfDay, true))
     if (this.compare(nextProps.contextMenuItems, this.props.contextMenuItems))
       ops.push(() => cal.setContextMenuItems(nextProps.contextMenuItems, true))
     if (this.compare(nextProps.customDayRenderer, this.props.customDayRenderer))
-      ops.push(() =>
-        cal.setCustomDayRenderer(nextProps.customDayRenderer, true)
-      )
-    if (
-      this.compare(
-        nextProps.customDataSourceRenderer,
-        this.props.customDataSourceRenderer
-      )
-    )
-      ops.push(() =>
-        cal.setCustomDataSourceRenderer(
-          nextProps.customDataSourceRenderer,
-          true
-        )
-      )
-    if (this.compare(nextProps.dataSource, this.props.dataSource))
-      ops.push(() => cal.setDataSource(nextProps.dataSource, true))
-    if (this.compare(nextProps.disabledDays, this.props.disabledDays))
-      ops.push(() => cal.setDisabledDays(nextProps.disabledDays, true))
+      ops.push(() => cal.setCustomDayRenderer(nextProps.customDayRenderer, true))
+    if (this.compare(nextProps.customDataSourceRenderer, this.props.customDataSourceRenderer))
+      ops.push(() => cal.setCustomDataSourceRenderer(nextProps.customDataSourceRenderer, true))
+    if (this.compare(nextProps.dataSource, this.props.dataSource)) ops.push(() => cal.setDataSource(nextProps.dataSource, true))
+    if (this.compare(nextProps.disabledDays, this.props.disabledDays)) ops.push(() => cal.setDisabledDays(nextProps.disabledDays, true))
     if (this.compare(nextProps.disabledWeekDays, this.props.disabledWeekDays))
       ops.push(() => cal.setDisabledWeekDays(nextProps.disabledWeekDays, true))
-    if (
-      this.compare(
-        nextProps.displayDisabledDataSource,
-        this.props.displayDisabledDataSource
-      )
-    )
-      ops.push(() =>
-        cal.setDisplayDisabledDataSource(
-          nextProps.displayDisabledDataSource,
-          true
-        )
-      )
-    if (this.compare(nextProps.displayHeader, this.props.displayHeader))
-      ops.push(() => cal.setDisplayHeader(nextProps.displayHeader, true))
+    if (this.compare(nextProps.displayDisabledDataSource, this.props.displayDisabledDataSource))
+      ops.push(() => cal.setDisplayDisabledDataSource(nextProps.displayDisabledDataSource, true))
+    if (this.compare(nextProps.displayHeader, this.props.displayHeader)) ops.push(() => cal.setDisplayHeader(nextProps.displayHeader, true))
     if (this.compare(nextProps.displayWeekNumber, this.props.displayWeekNumber))
-      ops.push(() =>
-        cal.setDisplayWeekNumber(nextProps.displayWeekNumber, true)
-      )
+      ops.push(() => cal.setDisplayWeekNumber(nextProps.displayWeekNumber, true))
     if (this.compare(nextProps.enableContextMenu, this.props.enableContextMenu))
-      ops.push(() =>
-        cal.setEnableContextMenu(nextProps.enableContextMenu, true)
-      )
-    if (
-      this.compare(
-        nextProps.enableRangeSelection,
-        this.props.enableRangeSelection
-      )
-    )
-      ops.push(() =>
-        cal.setEnableRangeSelection(nextProps.enableRangeSelection, true)
-      )
+      ops.push(() => cal.setEnableContextMenu(nextProps.enableContextMenu, true))
+    if (this.compare(nextProps.enableRangeSelection, this.props.enableRangeSelection))
+      ops.push(() => cal.setEnableRangeSelection(nextProps.enableRangeSelection, true))
     if (this.compare(nextProps.hiddenWeekDays, this.props.hiddenWeekDays))
       ops.push(() => cal.setHiddenWeekDays(nextProps.hiddenWeekDays, true))
-    if (this.compare(nextProps.language, this.props.language))
-      ops.push(() => cal.setLanguage(nextProps.language, true))
+    if (this.compare(nextProps.language, this.props.language)) ops.push(() => cal.setLanguage(nextProps.language, true))
     if (this.compare(nextProps.loadingTemplate, this.props.loadingTemplate))
       ops.push(() => cal.setLoadingTemplate(nextProps.loadingTemplate, true))
-    if (this.compare(nextProps.maxDate, this.props.maxDate))
-      ops.push(() => cal.setMaxDate(nextProps.maxDate, true))
-    if (this.compare(nextProps.minDate, this.props.minDate))
-      ops.push(() => cal.setMinDate(nextProps.minDate, true))
+    if (this.compare(nextProps.maxDate, this.props.maxDate)) ops.push(() => cal.setMaxDate(nextProps.maxDate, true))
+    if (this.compare(nextProps.minDate, this.props.minDate)) ops.push(() => cal.setMinDate(nextProps.minDate, true))
     if (this.compare(nextProps.roundRangeLimits, this.props.roundRangeLimits))
       ops.push(() => cal.setRoundRangeLimits(nextProps.roundRangeLimits, true))
-    if (this.compare(nextProps.style, this.props.style))
-      ops.push(() => cal.setStyle(nextProps.style, true))
-    if (this.compare(nextProps.weekStart, this.props.weekStart))
-      ops.push(() => cal.setWeekStart(nextProps.weekStart, true))
-    if (
-      this.compare(
-        nextProps.numberMonthsDisplayed,
-        this.props.numberMonthsDisplayed
-      )
-    )
+    if (this.compare(nextProps.style, this.props.style)) ops.push(() => cal.setStyle(nextProps.style, true))
+    if (this.compare(nextProps.weekStart, this.props.weekStart)) ops.push(() => cal.setWeekStart(nextProps.weekStart, true))
+    if (this.compare(nextProps.numberMonthsDisplayed, this.props.numberMonthsDisplayed))
       ops.push(() => cal.setWeekStart(nextProps.numberMonthsDisplayed, true))
-    if (this.compare(nextProps.startDate, this.props.startDate))
-      ops.push(() => cal.setStartDate(nextProps.startDate))
-    if (this.compare(nextProps.year, this.props.year))
-      ops.push(() => cal.setYear(nextProps.year))
+    if (this.compare(nextProps.startDate, this.props.startDate)) ops.push(() => cal.setStartDate(nextProps.startDate))
+    if (this.compare(nextProps.year, this.props.year)) ops.push(() => cal.setYear(nextProps.year))
 
     // Events
-    if (this.compare(nextProps.onDayClick, this.props.onDayClick))
-      this.updateEvent('clickDay', this.props.onDayClick, nextProps.onDayClick)
+    if (this.compare(nextProps.onDayClick, this.props.onDayClick)) this.updateEvent('clickDay', this.props.onDayClick, nextProps.onDayClick)
     if (this.compare(nextProps.onDayContextMenu, this.props.onDayContextMenu))
-      this.updateEvent(
-        'dayContextMenu',
-        this.props.onDayContextMenu,
-        nextProps.onDayContextMenu
-      )
+      this.updateEvent('dayContextMenu', this.props.onDayContextMenu, nextProps.onDayContextMenu)
     if (this.compare(nextProps.onDayEnter, this.props.onDayEnter))
-      this.updateEvent(
-        'mouseOnDay',
-        this.props.onDayEnter,
-        nextProps.onDayEnter
-      )
+      this.updateEvent('mouseOnDay', this.props.onDayEnter, nextProps.onDayEnter)
     if (this.compare(nextProps.onDayLeave, this.props.onDayLeave))
-      this.updateEvent(
-        'mouseOutDay',
-        this.props.onDayLeave,
-        nextProps.onDayLeave
-      )
+      this.updateEvent('mouseOutDay', this.props.onDayLeave, nextProps.onDayLeave)
     if (this.compare(nextProps.onRenderEnd, this.props.onRenderEnd))
-      this.updateEvent(
-        'renderEnd',
-        this.props.onRenderEnd,
-        nextProps.onRenderEnd
-      )
+      this.updateEvent('renderEnd', this.props.onRenderEnd, nextProps.onRenderEnd)
     if (this.compare(nextProps.onRangeSelected, this.props.onRangeSelected))
-      this.updateEvent(
-        'selectRange',
-        this.props.onRangeSelected,
-        nextProps.onRangeSelected
-      )
+      this.updateEvent('selectRange', this.props.onRangeSelected, nextProps.onRangeSelected)
     if (this.compare(nextProps.onPeriodChanged, this.props.onPeriodChanged))
-      this.updateEvent(
-        'periodChanged',
-        this.props.onPeriodChanged,
-        nextProps.onPeriodChanged
-      )
+      this.updateEvent('periodChanged', this.props.onPeriodChanged, nextProps.onPeriodChanged)
     if (this.compare(nextProps.onYearChanged, this.props.onYearChanged))
-      this.updateEvent(
-        'yearChanged',
-        this.props.onYearChanged,
-        nextProps.onYearChanged
-      )
+      this.updateEvent('yearChanged', this.props.onYearChanged, nextProps.onYearChanged)
 
     if (ops.length > 0) {
       ops.forEach((op) => op())
 
-      if (
-        nextProps.year == this.props.year &&
-        nextProps.startDate == this.props.startDate
-      ) {
+      if (nextProps.year == this.props.year && nextProps.startDate == this.props.startDate) {
         // If the year has changed, the calendar has automatically been rendered
         cal.render()
       }

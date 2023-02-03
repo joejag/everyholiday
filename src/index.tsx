@@ -2,7 +2,6 @@ import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-bootstrap-typeahead/css/Typeahead.css'
 
-// import 'bootstrap/dist/css/bootstrap.min.css'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 

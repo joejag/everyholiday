@@ -1,17 +1,22 @@
+import 'tippy.js/dist/tippy.css'
+
 import React from 'react'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import { Option } from 'react-bootstrap-typeahead/types/types'
+import Card from 'react-bootstrap/Card'
+import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import Form from 'react-bootstrap/Form'
 import Navbar from 'react-bootstrap/Navbar'
+import Row from 'react-bootstrap/Row'
+import tippy from 'tippy.js'
 
 import Calendar from './Calendar'
 import {
-    getHolidaysForYear, HolidayHighlight, listAllPlacesAvailable, PlaceToCover, YearsWorthOfHoliday
+    getHolidaysForYear, HolidayHighlight, listAllPlacesAvailable, YearsWorthOfHoliday
 } from './logic'
 
 const COLORS = [
-  '#e6194b',
   '#3cb44b',
   '#ffe119',
   '#4363d8',
@@ -31,6 +36,7 @@ const COLORS = [
   '#ffd8b1',
   '#000075',
   '#808080',
+  '#e6194b',
 ]
 
 const options = listAllPlacesAvailable()
@@ -44,30 +50,30 @@ const shortDate = (date: Date) => {
   return new Intl.DateTimeFormat('en-GB', options).format(date)
 }
 
-const HolidayList = ({
-  country,
-  holidays,
-}: {
-  country: string
-  holidays: any
-}) => {
+const HolidayList = ({ country, holidays }: { country: string; holidays: any }) => {
   return (
-    <>
-      <h3>{country} Holidays</h3>
-      <ul>
-        {holidays.map((h: any) => {
-          return (
-            <li key={h.id}>
-              <>
-                {shortDate(h.startDate)}: {h.name}
-              </>
-            </li>
-          )
-        })}
-      </ul>
-    </>
+    <Col>
+      <Card>
+        <Card.Header>{country}</Card.Header>
+        <Card.Body>
+          <ul>
+            {holidays.map((h: any) => {
+              return (
+                <li key={h.id}>
+                  <>
+                    {shortDate(h.startDate)}: {h.name}
+                  </>
+                </li>
+              )
+            })}
+          </ul>
+        </Card.Body>
+      </Card>
+    </Col>
   )
 }
+
+let tooltip: any = null
 
 function App() {
   const [countrySelection, setCountrySelection] = React.useState<Option[]>([
@@ -77,11 +83,7 @@ function App() {
     { label: 'Romania', value: 'RO' },
   ])
   const [year, setYear] = React.useState(new Date().getFullYear())
-  const [holidaysThisYear, setHolidaysThisYear] =
-    React.useState<YearsWorthOfHoliday>({ all: [], places: [] })
-  const [holidaysSelected, setHolidaysHere] = React.useState<
-    HolidayHighlight[]
-  >([])
+  const [holidaysThisYear, setHolidaysThisYear] = React.useState<YearsWorthOfHoliday>({ all: [], places: [] })
 
   React.useEffect(() => {
     let colorIndex = 0
@@ -94,19 +96,26 @@ function App() {
 
   const showHolidayAssociatedWithDate = (e: any) => {
     if (e.events.length > 0) {
-      const content: HolidayHighlight[] = []
+      let popupMessage = ''
 
       for (var i in e.events) {
         const ev = e.events[i]
-        content.push({
-          id: ev.id,
-          country: ev.country,
-          name: ev.name,
-          color: ev.color,
-          date: ev.startDate,
-        })
+        popupMessage += `<span style="color:${ev.color}">${ev.country}</span>: ${ev.name} <br />`
       }
-      setHolidaysHere(content)
+
+      if (tooltip !== null) {
+        tooltip.destroy()
+        tooltip = null
+      }
+
+      tooltip = tippy(e.element, {
+        content: popupMessage,
+        placement: 'bottom',
+        animation: 'shift-away',
+        arrow: true,
+        allowHTML: true,
+      })
+      tooltip.show()
     }
   }
 
@@ -114,13 +123,13 @@ function App() {
     <>
       <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand href="/">Public holidays</Navbar.Brand>
+          <Navbar.Brand href="/">Every public holiday</Navbar.Brand>
         </Container>
       </Navbar>
 
       <Container>
-        <div style={{ marginTop: '1em' }}>
-          <Form.Group style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: '0.7em' }}>
+          <Form.Group style={{ marginBottom: '1em' }}>
             <Typeahead
               id="basic-typeahead-multiple"
               labelKey="label"
@@ -138,7 +147,6 @@ function App() {
             weekStart={1}
             dataSource={holidaysThisYear.all}
             onDayEnter={showHolidayAssociatedWithDate}
-            onDayLeave={() => setHolidaysHere([])}
             onYearChanged={({ currentYear }: any) => {
               setYear(currentYear)
             }}
@@ -146,26 +154,11 @@ function App() {
         </div>
 
         <div style={{ margin: '1.6em' }}>
-          {holidaysSelected.map((h) => (
-            <h2 key={h.id}>
-              <span style={{ color: h.color }}>{h.country}</span>: {h.name}
-            </h2>
-          ))}
-          {holidaysSelected.length === 0 && (
-            <h2>
-              <em>Hover over a date to see the holidays</em>
-            </h2>
-          )}
-
-          {holidaysThisYear.places.map((h) => {
-            return (
-              <HolidayList
-                key={h.country}
-                country={h.country}
-                holidays={h.holidays}
-              />
-            )
-          })}
+          <Row xs={1} md={2} className="g-4">
+            {holidaysThisYear.places.map((h) => {
+              return <HolidayList key={h.country} country={h.country} holidays={h.holidays} />
+            })}
+          </Row>
         </div>
       </Container>
     </>
