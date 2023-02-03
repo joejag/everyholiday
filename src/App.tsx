@@ -5,13 +5,42 @@ import React from 'react'
 
 import Calendar from './Calendar'
 
-const niceDate = (date: Date) => {
-  var options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }
-  return new Intl.DateTimeFormat('en-GB', options).format(date)
+const PLACES_TO_COVER = [
+  { country: 'US', color: '#911eb4' },
+  { country: 'GB', state: 'SCT', color: '#e6194B' },
+  { country: 'PT', color: '#f58231' },
+  { country: 'RO', color: '#469990' },
+]
+
+interface YearsWorthOfHoliday {
+  all: {
+    id: number
+    color: string
+    name: string
+    startDate: Date
+    endDate: Date
+    country: string
+  }[]
+  places: {
+    country: string
+    color: string
+    holidays: {
+      id: number
+      color: string
+      name: string
+      startDate: Date
+      endDate: Date
+      country: string
+    }[]
+  }[]
+}
+
+interface HolidayHighlight {
+  id: number
+  name: string
+  country: string
+  color: string
+  date: Date
 }
 
 let id = 0
@@ -38,69 +67,22 @@ const holidaysFor = (
 
 const getHolidaysForYear = (year: number) => {
   // See https://www.npmjs.com/package/date-holidays
-  const usHolidays = holidaysFor(
-    year,
-    'USA',
-    '#911eb4',
-    new Holidays('US', { timezone: 'utc' })
-  )
-  const ukHolidays = holidaysFor(
-    year,
-    'Scotland',
-    '#e6194B',
-    new Holidays('GB', 'SCT', { timezone: 'utc' })
-  )
-  const roHolidays = holidaysFor(
-    year,
-    'Romania',
-    '#f58231',
-    new Holidays('RO', { timezone: 'utc' })
-  )
-  const ptHolidays = holidaysFor(
-    year,
-    'Portugal',
-    '#469990',
-    new Holidays('PT', { timezone: 'utc' })
-  )
-  const allHolidays = [
-    ...usHolidays,
-    ...ukHolidays,
-    ...roHolidays,
-    ...ptHolidays,
-  ]
+
+  const places = PLACES_TO_COVER.map((place) => {
+    let h = new Holidays(place.country, { timezone: 'utc' })
+    let name = h.getCountries()[place.country]
+    if (place.state) {
+      h = new Holidays(place.country, place.state, { timezone: 'utc' })
+      name = h.getStates(place.country)[place.state]
+    }
+    const holidays = holidaysFor(year, name, place.color, h)
+    return { country: name, holidays: holidays, color: place.color }
+  })
 
   return {
-    all: allHolidays,
-    places: [
-      { country: 'USA', holidays: usHolidays, color: '#911eb4' },
-      { country: 'Scotland', holidays: ukHolidays, color: '#e6194B' },
-      { country: 'Romania', holidays: roHolidays, color: '#f58231' },
-      { country: 'Portugal', holidays: ptHolidays, color: '#469990' },
-    ],
+    all: places.map((s) => s.holidays).flat(),
+    places,
   }
-}
-
-interface YearsWorthOfHoliday {
-  all: {
-    id: number
-    color: string
-    name: string
-    startDate: Date
-    endDate: Date
-    country: string
-  }[]
-  places: {
-    country: string
-    color: string
-    holidays: {
-      id: number
-      color: string
-      name: string
-      startDate: Date
-      endDate: Date
-      country: string
-    }[]
-  }[]
 }
 
 const HolidayList = ({
@@ -118,7 +100,7 @@ const HolidayList = ({
           return (
             <li key={h.id}>
               <>
-                {niceDate(h.startDate)}: {h.name}
+                {shortDate(h.startDate)}: {h.name}
               </>
             </li>
           )
@@ -128,25 +110,28 @@ const HolidayList = ({
   )
 }
 
-interface HolidayHighlight {
-  id: number
-  name: string
-  country: string
-  color: string
-  date: Date
+const shortDate = (date: Date) => {
+  var options: Intl.DateTimeFormatOptions = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }
+  return new Intl.DateTimeFormat('en-GB', options).format(date)
 }
 
 function App() {
   const [year, setYear] = React.useState(new Date().getFullYear())
   const [holidaysThisYear, setHolidaysThisYear] =
     React.useState<YearsWorthOfHoliday>(getHolidaysForYear(year))
-  const [holidaysHere, setHolidaysHere] = React.useState<HolidayHighlight[]>([])
+  const [holidaysSelected, setHolidaysHere] = React.useState<
+    HolidayHighlight[]
+  >([])
 
   React.useEffect(() => {
     setHolidaysThisYear(getHolidaysForYear(year))
   }, [year])
 
-  const mousey = (e: any) => {
+  const showHolidayAssociatedWithDate = (e: any) => {
     if (e.events.length > 0) {
       const content: HolidayHighlight[] = []
 
@@ -170,12 +155,23 @@ function App() {
         Public holidays in US, UK, Romania and Portugal
       </h2>
 
+      <p style={{ margin: '1.6em' }}>
+        Legend:{' '}
+        {holidaysThisYear.places.map((h) => {
+          return (
+            <React.Fragment key={h.country}>
+              <span style={{ color: h.color }}>{h.country}</span>{' '}
+            </React.Fragment>
+          )
+        })}
+      </p>
+
       <Calendar
         year={year}
         language="en"
         weekStart={1}
         dataSource={holidaysThisYear.all}
-        onDayEnter={mousey}
+        onDayEnter={showHolidayAssociatedWithDate}
         onDayLeave={() => setHolidaysHere([])}
         onYearChanged={({ currentYear }: any) => {
           setYear(currentYear)
@@ -183,32 +179,25 @@ function App() {
       />
 
       <div style={{ margin: '1.6em' }}>
-        <p>
-          {holidaysHere.map((h) => (
-            <h2 key={h.id}>
-              {h.country}: {h.name}
-            </h2>
-          ))}
-          {holidaysHere.length === 0 && (
-            <h2>
-              <em>Hover over a date to see the holidays</em>
-            </h2>
-          )}
-        </p>
-
-        <p>
-          Legend:{' '}
-          {holidaysThisYear.places.map((h) => {
-            return (
-              <>
-                <span style={{ color: h.color }}>{h.country}</span>{' '}
-              </>
-            )
-          })}
-        </p>
+        {holidaysSelected.map((h) => (
+          <h2 key={h.id}>
+            {h.country}: {h.name}
+          </h2>
+        ))}
+        {holidaysSelected.length === 0 && (
+          <h2>
+            <em>Hover over a date to see the holidays</em>
+          </h2>
+        )}
 
         {holidaysThisYear.places.map((h) => {
-          return <HolidayList country={h.country} holidays={h.holidays} />
+          return (
+            <HolidayList
+              key={h.country}
+              country={h.country}
+              holidays={h.holidays}
+            />
+          )
         })}
       </div>
     </div>
