@@ -206,6 +206,15 @@ function App() {
           })}
         </Row>
       </Container>
+      <footer className="mt-4 text-center text-lg-start bg-light text-muted">
+        <div className="text-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
+          Holiday date updated weekly from{' '}
+          <a className="text-reset fw-bold" href="https://github.com/commenthol/date-holidays">
+            date-holidays
+          </a>{' '}
+          - some countries are missing, help them out.
+        </div>
+      </footer>
     </>
   )
 }
