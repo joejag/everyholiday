@@ -85,14 +85,15 @@ function App() {
   ])
   const [year, setYear] = React.useState(new Date().getFullYear())
   const [holidaysThisYear, setHolidaysThisYear] = React.useState<YearsWorthOfHoliday>({ all: [], places: [] })
+  const [includeAllTypes, setIncludeAllTypes] = React.useState(false)
 
   React.useEffect(() => {
     let colorIndex = 0
     const placesToCover = countrySelection.map((c: any) => {
       return { ...c.value, color: COLORS[colorIndex++ % COLORS.length] }
     })
-    setHolidaysThisYear(getHolidaysForYear(year, placesToCover))
-  }, [year, countrySelection])
+    setHolidaysThisYear(getHolidaysForYear(year, includeAllTypes, placesToCover))
+  }, [year, countrySelection, includeAllTypes])
 
   const showHolidayAssociatedWithDate = (e: any) => {
     if (e.events.length > 0) {
@@ -173,6 +174,15 @@ function App() {
             onDayEnter={showHolidayAssociatedWithDate}
             onYearChanged={({ currentYear }: any) => {
               setYear(currentYear)
+            }}
+          />
+          <Form.Check
+            className="mt-2"
+            type="switch"
+            id="custom-switch"
+            label="Include other observed days"
+            onChange={(e) => {
+              setIncludeAllTypes(e.target.checked)
             }}
           />
         </div>

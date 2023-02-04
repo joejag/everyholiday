@@ -60,10 +60,10 @@ export const listAllPlacesAvailable = () => {
 }
 
 let id = 0
-export const holidaysFor = (year: number, country: string, color: string, countryCode: string, holiday: Holidays) => {
+export const holidaysFor = (year: number, country: string, color: string, includeAllTypes: boolean, holiday: Holidays) => {
   return holiday
     .getHolidays(year, 'en-GB')
-    .filter((h) => ['public'].includes(h.type))
+    .filter((h) => includeAllTypes || ['public'].includes(h.type))
     .map((h) => {
       return {
         id: id++,
@@ -76,7 +76,7 @@ export const holidaysFor = (year: number, country: string, color: string, countr
     })
 }
 
-export const getHolidaysForYear = (year: number, placesToCover: PlaceToCover[]) => {
+export const getHolidaysForYear = (year: number, includeAllTypes: boolean, placesToCover: PlaceToCover[]) => {
   // See https://www.npmjs.com/package/date-holidays
 
   const places = placesToCover.map((place: PlaceToCover) => {
@@ -87,7 +87,7 @@ export const getHolidaysForYear = (year: number, placesToCover: PlaceToCover[]) 
       name = h.getStates(place.country)[place.state]
     }
     const countryCode = (place.country + (place.state ? '-' + place.state : '')).toLowerCase()
-    const holidays = holidaysFor(year, name, place.color, countryCode, h)
+    const holidays = holidaysFor(year, name, place.color, includeAllTypes, h)
     return { country: name, countryCode, holidays: holidays, color: place.color }
   })
 
