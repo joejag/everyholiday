@@ -14,6 +14,7 @@ import tippy from 'tippy.js'
 import Calendar from './Calendar'
 import { getHolidaysForYear, listAllPlacesAvailable, YearsWorthOfHoliday } from './logic'
 
+const deepEqual = require('deep-equal')
 const COLORS = [
   '#3cb44b',
   '#4363d8',
@@ -38,6 +39,18 @@ const COLORS = [
 ]
 
 const options = listAllPlacesAvailable()
+
+let defaults = [{ country: 'US' }, { country: 'GB', state: 'SCT' }, { country: 'PT' }, { country: 'RO' }]
+if (window.location.hash.startsWith('#c=')) {
+  defaults = window.location.hash
+    .substring(3)
+    .split(',')
+    .map((c) => {
+      if (c.includes('-')) return { country: c.split('-')[0], state: c.split('-')[1] }
+      return { country: c }
+    })
+}
+const defaultSelection = options.filter((o) => defaults.find((d) => deepEqual(o.value, d)))
 
 const shortDate = (date: Date) => {
   var options: Intl.DateTimeFormatOptions = {
@@ -77,17 +90,17 @@ const HolidayList = ({ country, countryCode, holidays }: { country: string; coun
 let tooltip: any = null
 
 function App() {
-  const [countrySelection, setCountrySelection] = React.useState<Option[]>([
-    { label: 'United States of America', value: { country: 'US' } },
-    { label: 'Scotland', value: { country: 'GB', state: 'SCT' } },
-    { label: 'Portugal', value: { country: 'PT' } },
-    { label: 'Romania', value: { country: 'RO' } },
-  ])
+  const [countrySelection, setCountrySelection] = React.useState<Option[]>(defaultSelection)
   const [year, setYear] = React.useState(new Date().getFullYear())
   const [holidaysThisYear, setHolidaysThisYear] = React.useState<YearsWorthOfHoliday>({ all: [], places: [] })
   const [includeAllTypes, setIncludeAllTypes] = React.useState(false)
 
   React.useEffect(() => {
+    const hashStuff = countrySelection.map((c: any) => {
+      return c.value.state ? c.value.country + '-' + c.value.state : c.value.country
+    })
+    window.location.hash = 'c=' + hashStuff
+
     let colorIndex = 0
     const placesToCover = countrySelection.map((c: any) => {
       return { ...c.value, color: COLORS[colorIndex++ % COLORS.length] }
